@@ -101,8 +101,8 @@ public class SnakeModel {
 
     public void eatFood(FoodModel foodModel) {
         if (x[0] == foodModel.getFoodX() && y[0] == foodModel.getFoodY()) {
-            length++;
-            foodEaten++;
+            length += 0.5;
+            foodEaten += 0.5;
             foodModel.spawn();
             x[length - 1] = x[length - 2];
             y[length - 1] = y[length - 2];

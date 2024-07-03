@@ -13,18 +13,18 @@ public class GamePanelView extends JPanel {
     private final SnakeModel snakeModel;
     private final FoodModel foodModel;
     private final FoodBoostModel foodBoostModel;
-    private final FoodDeadModel foodDeadModel; // Modèle pour la nourriture morte
+    private final java.util.List<FoodDeadModel> foodDeadList; // Liste pour plusieurs instances de nourriture morte
     private JButton restartButton;
     private JButton startButton; // Bouton Start
     private JLabel titleLabel; // Titre du jeu
-    private Timer gameTimer; // Timer comme champ de classe
+    private Timer gameTimer; // Timer pour le jeu
     private int highScore = 0; // Variable pour stocker le high score
 
     public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel) {
         this.snakeModel = snakeModel;
         this.foodModel = foodModel;
         this.foodBoostModel = foodBoostModel;
-        this.foodDeadModel = new FoodDeadModel(); // Initialisation du modèle de nourriture morte
+        this.foodDeadList = new java.util.ArrayList<>(); // Initialisation de la liste
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.DARK_GRAY);
@@ -102,6 +102,15 @@ public class GamePanelView extends JPanel {
         });
 
         add(restartButton);
+
+        // Configurer un timer pour ajouter des objets FoodDead toutes les 5 secondes
+        Timer addFoodDeadTimer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addFoodDead();
+            }
+        });
+        addFoodDeadTimer.start();
     }
 
     private void startGame() {
@@ -119,11 +128,12 @@ public class GamePanelView extends JPanel {
                     snakeModel.eatFood(foodModel);
                     snakeModel.eatFoodBoost(foodBoostModel);
 
-                    // Vérifier la collision avec la nourriture morte
-                    if (snakeModel.getX()[0] == foodDeadModel.getFoodX()
-                            && snakeModel.getY()[0] == foodDeadModel.getFoodY()) {
-                        snakeModel.setRunning(false); // Arrêter le jeu
-                        foodDeadModel.stopTimer(); // Arrêter le timer de la nourriture morte
+                    // Vérifier la collision avec toutes les nourritures mortes
+                    for (FoodDeadModel foodDead : foodDeadList) {
+                        if (snakeModel.getX()[0] == foodDead.getFoodX()
+                                && snakeModel.getY()[0] == foodDead.getFoodY()) {
+                            snakeModel.setRunning(false); // Arrêter le jeu en cas de collision
+                        }
                     }
 
                     repaint();
@@ -138,7 +148,14 @@ public class GamePanelView extends JPanel {
             gameTimer.stop(); // Arrêter le timer existant s'il est en cours
         }
         snakeModel.restartGame(); // Réinitialiser le modèle de serpent
+        foodDeadList.clear(); // Vider la liste de nourriture morte pour un nouveau départ
         startGame(); // Redémarrer le jeu avec un nouveau timer
+    }
+
+    private void addFoodDead() {
+        FoodDeadModel newFoodDead = new FoodDeadModel();
+        foodDeadList.add(newFoodDead);
+        repaint();
     }
 
     @Override
@@ -152,8 +169,10 @@ public class GamePanelView extends JPanel {
             // Dessiner la nourriture boost
             foodBoostModel.draw(g);
 
-            // Dessiner la nourriture morte
-            foodDeadModel.draw(g);
+            // Dessiner toutes les nourritures mortes
+            for (FoodDeadModel foodDead : foodDeadList) {
+                foodDead.draw(g);
+            }
 
             // Dessiner le serpent
             for (int i = 0; i < snakeModel.getLength(); i++) {

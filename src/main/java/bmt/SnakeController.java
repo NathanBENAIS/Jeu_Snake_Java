@@ -14,7 +14,7 @@ public class SnakeController {
         foodModel = new FoodModel();
         foodBoostModel = new FoodBoostModel();
         gameView = new GamePanelView(snakeModel, foodModel, foodBoostModel);
-        foodController = new FoodController(foodModel, gameView);
+        foodController = new FoodController(foodModel, foodBoostModel, gameView, snakeModel); // Modifier ici
 
         JFrame frame = new JFrame("Snake");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,5 +35,4 @@ public class SnakeController {
             }
         });
     }
-
 }
