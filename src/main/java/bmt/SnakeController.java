@@ -6,12 +6,14 @@ public class SnakeController {
     private SnakeModel snakeModel;
     private GamePanelView gameView;
     private FoodModel foodModel;
+    private FoodBoostModel foodBoostModel;
     private FoodController foodController;
 
     public SnakeController() {
         snakeModel = new SnakeModel();
         foodModel = new FoodModel();
-        gameView = new GamePanelView(snakeModel, foodModel);
+        foodBoostModel = new FoodBoostModel();
+        gameView = new GamePanelView(snakeModel, foodModel, foodBoostModel);
         foodController = new FoodController(foodModel, gameView);
 
         JFrame frame = new JFrame("Snake");

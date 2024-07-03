@@ -12,12 +12,14 @@ public class GamePanelView extends JPanel {
 
     private final SnakeModel snakeModel;
     private final FoodModel foodModel;
+    private final FoodBoostModel foodBoostModel;
     private JButton restartButton;
     private Timer gameTimer; // Timer comme champ de classe
 
-    public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel) {
+    public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel) {
         this.snakeModel = snakeModel;
         this.foodModel = foodModel;
+        this.foodBoostModel = foodBoostModel;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.DARK_GRAY);
@@ -59,20 +61,6 @@ public class GamePanelView extends JPanel {
         startGame(); // Démarrer le jeu initialement
     }
 
-    // private void startGame() {
-    // gameTimer = new Timer(GAME_SPEED, e -> {
-    // if (snakeModel.isRunning()) {
-    // snakeModel.move();
-    // snakeModel.checkCollision();
-    // snakeModel.eatFood(foodModel); // Appel de la méthode eatFood pour vérifier
-    // et manger la nourriture
-    // repaint();
-    // } else {
-    // gameTimer.stop(); // Arrêter le jeu si le serpent n'est plus en cours
-    // }
-    // });
-    // gameTimer.start();
-    // }
     private void startGame() {
         gameTimer = new Timer(GAME_SPEED, new ActionListener() {
             @Override
@@ -81,7 +69,9 @@ public class GamePanelView extends JPanel {
                     snakeModel.move();
                     snakeModel.checkCollision();
                     snakeModel.checkFood(foodModel.getFoodX(), foodModel.getFoodY());
+                    snakeModel.checkFoodBoost(foodBoostModel.getFoodX(), foodBoostModel.getFoodY());
                     snakeModel.eatFood(foodModel);
+                    snakeModel.eatFoodBoost(foodBoostModel);
                     repaint();
                 }
             }
@@ -102,15 +92,21 @@ public class GamePanelView extends JPanel {
         super.paintComponent(g);
 
         if (snakeModel.isRunning()) {
-            // Dessiner la nourriture
+            // Dessiner la nourriture normale
             foodModel.draw(g);
+
+            // Dessiner la nourriture boost
+            foodBoostModel.draw(g);
 
             // Dessiner le serpent
             for (int i = 0; i < snakeModel.getLength(); i++) {
                 if (i == 0) {
                     g.setColor(Color.WHITE); // Couleur de la tête
                 } else {
-                    g.setColor(Color.GREEN); // Couleur du corps
+                    g.setColor(Color.GREEN); // Couleur du corps (par défaut)
+                }
+                if (snakeModel.isBoosted()) {
+                    g.setColor(new Color(148, 0, 211)); // Couleur violette lorsque boosté
                 }
                 g.fillRect(snakeModel.getX()[i], snakeModel.getY()[i], UNIT_SIZE, UNIT_SIZE);
             }
