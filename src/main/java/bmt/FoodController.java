@@ -9,23 +9,29 @@ import java.util.List;
 public class FoodController {
     private final FoodModel foodModel;
     private final FoodBoostModel foodBoostModel;
-    private final List<FoodDeadModel> foodDeadList; // Liste pour gérer les objets FoodDead
+    private final List<FoodDeadModel> foodDeadList;
     private final GamePanelView gameView;
     private final SnakeModel snakeModel;
 
+    private FoodPoisonModel foodPoisonModel; // Ajouter l'instance de FoodPoisonModel
+
     private Timer spawnFoodTimer;
     private Timer addFoodDeadTimer;
+    private Timer spawnFoodPoisonTimer;
+    private Timer despawnFoodPoisonTimer;
 
     public FoodController(FoodModel foodModel, FoodBoostModel foodBoostModel, GamePanelView gameView,
             SnakeModel snakeModel) {
         this.foodModel = foodModel;
         this.foodBoostModel = foodBoostModel;
-        this.foodDeadList = new ArrayList<>(); // Initialisation de la liste
+        this.foodDeadList = new ArrayList<>();
         this.gameView = gameView;
         this.snakeModel = snakeModel;
+        this.foodPoisonModel = new FoodPoisonModel(); // Initialiser FoodPoisonModel
 
         setupFoodSpawning();
         setupFoodDeadAdding();
+        setupFoodPoisonSpawning();
     }
 
     private void setupFoodSpawning() {
@@ -49,6 +55,24 @@ public class FoodController {
         addFoodDeadTimer.start();
     }
 
+    private void setupFoodPoisonSpawning() {
+        spawnFoodPoisonTimer = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                spawnFoodPoison();
+            }
+        });
+        spawnFoodPoisonTimer.start();
+
+        despawnFoodPoisonTimer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                foodPoisonModel.despawn();
+                gameView.repaint();
+            }
+        });
+    }
+
     public void handleFoodConsumption() {
         if (snakeModel.getX()[0] == foodModel.getFoodX() && snakeModel.getY()[0] == foodModel.getFoodY()) {
             snakeModel.eatFood(foodModel);
@@ -60,10 +84,15 @@ public class FoodController {
             foodBoostModel.spawn();
         }
 
+        if (foodPoisonModel.isVisible() && snakeModel.getX()[0] == foodPoisonModel.getFoodX()
+                && snakeModel.getY()[0] == foodPoisonModel.getFoodY()) {
+            snakeModel.eatFoodPoison(foodPoisonModel);
+            foodPoisonModel.despawn();
+        }
+
         for (FoodDeadModel foodDead : foodDeadList) {
             if (snakeModel.getX()[0] == foodDead.getFoodX() && snakeModel.getY()[0] == foodDead.getFoodY()) {
                 snakeModel.eatFoodDead(foodDead);
-                // Pas de respawn car nous ne voulons pas supprimer FoodDead
             }
         }
 
@@ -95,6 +124,16 @@ public class FoodController {
         gameView.repaint();
     }
 
+    private void spawnFoodPoison() {
+        foodPoisonModel.spawn();
+        while (checkCollisionWithSnake(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY())) {
+            foodPoisonModel.spawn();
+        }
+        despawnFoodPoisonTimer.setRepeats(false); // Assurez-vous qu'il ne se répète pas
+        despawnFoodPoisonTimer.start();
+        gameView.repaint();
+    }
+
     private boolean checkCollisionWithSnake(int foodX, int foodY) {
         for (int i = 0; i < snakeModel.getLength(); i++) {
             if (snakeModel.getX()[i] == foodX && snakeModel.getY()[i] == foodY) {
@@ -110,6 +149,12 @@ public class FoodController {
         }
         if (addFoodDeadTimer != null) {
             addFoodDeadTimer.stop();
+        }
+        if (spawnFoodPoisonTimer != null) {
+            spawnFoodPoisonTimer.stop();
+        }
+        if (despawnFoodPoisonTimer != null) {
+            despawnFoodPoisonTimer.stop();
         }
     }
 }

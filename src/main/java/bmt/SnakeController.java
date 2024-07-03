@@ -7,14 +7,16 @@ public class SnakeController {
     private GamePanelView gameView;
     private FoodModel foodModel;
     private FoodBoostModel foodBoostModel;
+    private FoodPoisonModel foodPoisonModel; // Ajouter l'instance de FoodPoisonModel
     private FoodController foodController;
 
     public SnakeController() {
         snakeModel = new SnakeModel();
         foodModel = new FoodModel();
         foodBoostModel = new FoodBoostModel();
-        gameView = new GamePanelView(snakeModel, foodModel, foodBoostModel);
-        foodController = new FoodController(foodModel, foodBoostModel, gameView, snakeModel); // Modifier ici
+        foodPoisonModel = new FoodPoisonModel(); // Initialiser FoodPoisonModel
+        gameView = new GamePanelView(snakeModel, foodModel, foodBoostModel, foodPoisonModel);
+        foodController = new FoodController(foodModel, foodBoostModel, gameView, snakeModel);
 
         JFrame frame = new JFrame("Snake");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,7 +26,7 @@ public class SnakeController {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        gameView.requestFocusInWindow(); // Pour s'assurer que le panneau reçoit les événements de clavier
+        gameView.requestFocusInWindow();
     }
 
     public static void main(String[] args) {

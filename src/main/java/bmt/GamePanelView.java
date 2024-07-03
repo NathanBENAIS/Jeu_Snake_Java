@@ -13,6 +13,8 @@ public class GamePanelView extends JPanel {
     private final SnakeModel snakeModel;
     private final FoodModel foodModel;
     private final FoodBoostModel foodBoostModel;
+    private final FoodPoisonModel foodPoisonModel;
+
     private final java.util.List<FoodDeadModel> foodDeadList; // Liste pour plusieurs instances de nourriture morte
     private JButton restartButton;
     private JButton startButton; // Bouton Start
@@ -20,11 +22,13 @@ public class GamePanelView extends JPanel {
     private Timer gameTimer; // Timer pour le jeu
     private int highScore = 0; // Variable pour stocker le high score
 
-    public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel) {
+    public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel,
+            final FoodPoisonModel foodPoisonModel) {
         this.snakeModel = snakeModel;
         this.foodModel = foodModel;
         this.foodBoostModel = foodBoostModel;
         this.foodDeadList = new java.util.ArrayList<>(); // Initialisation de la liste
+        this.foodPoisonModel = foodPoisonModel;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.DARK_GRAY);
@@ -125,6 +129,7 @@ public class GamePanelView extends JPanel {
                     snakeModel.checkCollision();
                     snakeModel.checkFood(foodModel.getFoodX(), foodModel.getFoodY());
                     snakeModel.checkFoodBoost(foodBoostModel.getFoodX(), foodBoostModel.getFoodY());
+                    snakeModel.checkFoodPoison(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY(), foodPoisonModel);
                     snakeModel.eatFood(foodModel);
                     snakeModel.eatFoodBoost(foodBoostModel);
 
@@ -168,7 +173,7 @@ public class GamePanelView extends JPanel {
 
             // Dessiner la nourriture boost
             foodBoostModel.draw(g);
-
+            foodPoisonModel.draw(g); // Dessiner la nourriture empoisonnée
             // Dessiner toutes les nourritures mortes
             for (FoodDeadModel foodDead : foodDeadList) {
                 foodDead.draw(g);

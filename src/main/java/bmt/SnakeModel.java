@@ -86,6 +86,25 @@ public class SnakeModel {
         }
     }
 
+    public void checkFoodPoison(int foodX, int foodY, FoodPoisonModel foodPoisonModel) {
+        if (x[0] == foodX && y[0] == foodY) {
+            eatFoodPoison(foodPoisonModel);
+            foodPoisonModel.spawn();
+        }
+    }
+
+    public void eatFoodPoison(FoodPoisonModel foodPoisonModel) {
+        // Décrémentez le score de 2
+        foodEaten -= 2;
+
+        // Réduire la longueur du serpent de 2
+        if (length > 2) {
+            length -= 2;
+        } else {
+            length = 1; // Assurez-vous que la longueur ne devient pas nulle ou négative
+        }
+    }
+
     private void startBoostTimer() {
         boosted = true;
         boostTimer = new Timer(BOOST_DURATION, new ActionListener() {
