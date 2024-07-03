@@ -14,6 +14,8 @@ public class GamePanelView extends JPanel {
     private final FoodModel foodModel;
     private final FoodBoostModel foodBoostModel;
     private JButton restartButton;
+    private JButton startButton; // Bouton Start
+    private JLabel titleLabel; // Titre du jeu
     private Timer gameTimer; // Timer comme champ de classe
 
     public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel) {
@@ -25,6 +27,46 @@ public class GamePanelView extends JPanel {
         setBackground(Color.DARK_GRAY);
         setFocusable(true);
         addKeyListener(new MyKeyAdapter());
+
+        setLayout(null); // Utiliser null layout pour positionner les composants précisément
+
+        // Création du titre du jeu
+        titleLabel = new JLabel("Snake Game", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Sans serif", Font.BOLD, 36));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBounds(WIDTH / 2 - 150, HEIGHT / 3 - 100, 300, 50); // Dimensions et position
+
+        add(titleLabel);
+
+        // Création du bouton Start avec style personnalisé
+        startButton = new JButton("Start");
+        startButton.setBounds(WIDTH / 2 - 75, HEIGHT / 2 - 20, 150, 50); // Dimensions et position
+        startButton.setFont(new Font("Sans serif", Font.BOLD, 14));
+        startButton.setBackground(new Color(59, 89, 182));
+        startButton.setForeground(Color.WHITE);
+        startButton.setFocusPainted(false);
+        startButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+
+        startButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                startButton.setBackground(new Color(89, 119, 222));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                startButton.setBackground(new Color(59, 89, 182));
+            }
+        });
+
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                startGame(); // Démarrer le jeu
+                startButton.setVisible(false); // Cacher le bouton Start après avoir démarré
+                titleLabel.setVisible(false); // Cacher le titre après avoir démarré
+            }
+        });
+
+        add(startButton);
 
         // Création du bouton Restart avec style personnalisé
         restartButton = new JButton("Restart");
@@ -57,11 +99,12 @@ public class GamePanelView extends JPanel {
         });
 
         add(restartButton);
-
-        startGame(); // Démarrer le jeu initialement
     }
 
     private void startGame() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
         gameTimer = new Timer(GAME_SPEED, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -82,8 +125,8 @@ public class GamePanelView extends JPanel {
     private void restartGame() {
         if (gameTimer != null) {
             gameTimer.stop(); // Arrêter le timer existant s'il est en cours
-            gameTimer = null; // Détruire l'instance du timer
         }
+        snakeModel.restartGame(); // Réinitialiser le modèle
         startGame(); // Redémarrer le jeu avec un nouveau timer
     }
 
@@ -163,6 +206,13 @@ public class GamePanelView extends JPanel {
                 case KeyEvent.VK_DOWN:
                     if (snakeModel.getDirection() != 'U') {
                         snakeModel.setDirection('D');
+                    }
+                    break;
+                case KeyEvent.VK_SPACE:
+                    if (!snakeModel.isRunning() && restartButton.isVisible()) {
+                        snakeModel.restartGame();
+                        restartButton.setVisible(false);
+                        restartGame();
                     }
                     break;
             }
