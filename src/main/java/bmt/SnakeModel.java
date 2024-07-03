@@ -1,6 +1,6 @@
 package bmt;
 
-import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,28 +8,26 @@ public class SnakeModel {
     private static final int UNIT_SIZE = 20;
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
-    private static final int BOOST_DURATION = 5000; // Durée du boost en millisecondes (5 secondes)
+    private static final int BOOST_DURATION = 5000;
 
     private int[] x = new int[WIDTH * HEIGHT / UNIT_SIZE / UNIT_SIZE];
     private int[] y = new int[WIDTH * HEIGHT / UNIT_SIZE / UNIT_SIZE];
 
     private int length = 5;
     private int foodEaten;
-    private char direction = 'R'; // Direction initiale
+    private char direction = 'R';
 
     private boolean running = true;
-    private boolean boosted = false; // Indique si le serpent est boosté
+    private boolean boosted = false;
     private Timer boostTimer;
 
     public SnakeModel() {
-        // Initialisation du serpent
         x[0] = 0;
         y[0] = 0;
     }
 
     public void move() {
-        // Déplacer le serpent en fonction de la direction
-        int speedMultiplier = boosted ? (2) : 1; // Boost de vitesse si boosted est true
+        int speedMultiplier = boosted ? 2 : 1;
         for (int i = length; i > 0; i--) {
             x[i] = x[i - 1];
             y[i] = y[i - 1];
@@ -51,26 +49,21 @@ public class SnakeModel {
     }
 
     public void checkCollision() {
-        // Vérifier la collision avec les bords de l'écran
         if (x[0] < 0 || x[0] >= WIDTH || y[0] < 0 || y[0] >= HEIGHT) {
             running = false;
         }
-
-        // Vérifier la collision avec le corps du serpent
         for (int i = length; i > 0; i--) {
             if (x[0] == x[i] && y[0] == y[i]) {
                 running = false;
                 break;
             }
         }
-
         if (!running) {
-            // Arrêter le jeu ou effectuer d'autres actions
+            // Actions à effectuer lorsque le jeu s'arrête
         }
     }
 
     public void checkFood(int foodX, int foodY) {
-        // Vérifier si la tête du serpent a mangé de la nourriture normale
         if (x[0] == foodX && y[0] == foodY) {
             length++;
             foodEaten++;
@@ -78,35 +71,39 @@ public class SnakeModel {
     }
 
     public void checkFoodBoost(int foodX, int foodY) {
-        // Vérifier si la tête du serpent a mangé de la nourriture boost
         if (x[0] == foodX && y[0] == foodY) {
-            startBoostTimer(); // Démarrer le timer de boost
+            startBoostTimer();
             boosted = true;
             length++;
             foodEaten++;
         }
     }
 
+    public void checkFoodDead(int foodX, int foodY, FoodDeadModel foodDeadModel) {
+        if (x[0] == foodX && y[0] == foodY) {
+            length++;
+            foodDeadModel.spawn();
+        }
+    }
+
     private void startBoostTimer() {
-        boosted = true; // Activer le boost immédiatement
+        boosted = true;
         boostTimer = new Timer(BOOST_DURATION, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boosted = false; // Désactiver le boost lorsque le timer expire
-                boostTimer.stop(); // Arrêter le timer
+                boosted = false;
+                boostTimer.stop();
             }
         });
-        boostTimer.setRepeats(false); // Ne pas répéter le timer
+        boostTimer.setRepeats(false);
         boostTimer.start();
     }
 
     public void eatFood(FoodModel foodModel) {
         if (x[0] == foodModel.getFoodX() && y[0] == foodModel.getFoodY()) {
-            length += 0.5;
-            foodEaten += 0.5;
-            foodModel.spawn(); // Réinitialiser la position de la nourriture
-
-            // Ajouter un nouveau segment de serpent à la position actuelle de la tête
+            length++;
+            foodEaten++;
+            foodModel.spawn();
             x[length - 1] = x[length - 2];
             y[length - 1] = y[length - 2];
         }
@@ -114,15 +111,19 @@ public class SnakeModel {
 
     public void eatFoodBoost(FoodBoostModel foodBoostModel) {
         if (x[0] == foodBoostModel.getFoodX() && y[0] == foodBoostModel.getFoodY()) {
-            startBoostTimer(); // Démarrer le timer de boost
+            startBoostTimer();
             boosted = true;
             length++;
             foodEaten++;
-            foodBoostModel.spawn(); // Réinitialiser la position de la nourriture boost
-
-            // Ajouter un nouveau segment de serpent à la position actuelle de la tête
+            foodBoostModel.spawn();
             x[length - 1] = x[length - 2];
             y[length - 1] = y[length - 2];
+        }
+    }
+
+    public void eatFoodDead(FoodDeadModel foodDeadModel) {
+        if (x[0] == foodDeadModel.getFoodX() && y[0] == foodDeadModel.getFoodY()) {
+            running = false;
         }
     }
 
@@ -164,19 +165,19 @@ public class SnakeModel {
         direction = 'R';
         running = true;
         boosted = false;
-
-        // Réinitialisation de la position du serpent
         x[0] = 0;
         y[0] = 0;
         for (int i = 1; i < length; i++) {
             x[i] = 0;
             y[i] = 0;
         }
-
-        // Arrêter le timer de boost s'il est en cours
         if (boostTimer != null) {
             boostTimer.stop();
             boostTimer = null;
         }
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }

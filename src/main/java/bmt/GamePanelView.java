@@ -13,15 +13,18 @@ public class GamePanelView extends JPanel {
     private final SnakeModel snakeModel;
     private final FoodModel foodModel;
     private final FoodBoostModel foodBoostModel;
+    private final FoodDeadModel foodDeadModel; // Modèle pour la nourriture morte
     private JButton restartButton;
     private JButton startButton; // Bouton Start
     private JLabel titleLabel; // Titre du jeu
     private Timer gameTimer; // Timer comme champ de classe
+    private int highScore = 0; // Variable pour stocker le high score
 
     public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel) {
         this.snakeModel = snakeModel;
         this.foodModel = foodModel;
         this.foodBoostModel = foodBoostModel;
+        this.foodDeadModel = new FoodDeadModel(); // Initialisation du modèle de nourriture morte
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.DARK_GRAY);
@@ -115,6 +118,14 @@ public class GamePanelView extends JPanel {
                     snakeModel.checkFoodBoost(foodBoostModel.getFoodX(), foodBoostModel.getFoodY());
                     snakeModel.eatFood(foodModel);
                     snakeModel.eatFoodBoost(foodBoostModel);
+
+                    // Vérifier la collision avec la nourriture morte
+                    if (snakeModel.getX()[0] == foodDeadModel.getFoodX()
+                            && snakeModel.getY()[0] == foodDeadModel.getFoodY()) {
+                        snakeModel.setRunning(false); // Arrêter le jeu
+                        foodDeadModel.stopTimer(); // Arrêter le timer de la nourriture morte
+                    }
+
                     repaint();
                 }
             }
@@ -126,7 +137,7 @@ public class GamePanelView extends JPanel {
         if (gameTimer != null) {
             gameTimer.stop(); // Arrêter le timer existant s'il est en cours
         }
-        snakeModel.restartGame(); // Réinitialiser le modèle
+        snakeModel.restartGame(); // Réinitialiser le modèle de serpent
         startGame(); // Redémarrer le jeu avec un nouveau timer
     }
 
@@ -140,6 +151,9 @@ public class GamePanelView extends JPanel {
 
             // Dessiner la nourriture boost
             foodBoostModel.draw(g);
+
+            // Dessiner la nourriture morte
+            foodDeadModel.draw(g);
 
             // Dessiner le serpent
             for (int i = 0; i < snakeModel.getLength(); i++) {
@@ -163,6 +177,11 @@ public class GamePanelView extends JPanel {
             int y = 20; // Position fixe verticalement
             g.drawString(scoreText, x, y);
         } else {
+            // Mettre à jour le high score si le score actuel est supérieur
+            if (snakeModel.getFoodEaten() > highScore) {
+                highScore = snakeModel.getFoodEaten();
+            }
+
             // Afficher l'écran de fin de jeu
             g.setColor(Color.RED);
             g.setFont(new Font("Sans serif", Font.BOLD, 40));
@@ -178,8 +197,13 @@ public class GamePanelView extends JPanel {
             int xScore = (WIDTH - g.getFontMetrics().stringWidth(finalScoreText)) / 2;
             g.drawString(finalScoreText, xScore, yGameOver + 40); // Positionner sous le texte Game Over
 
-            // Positionner le bouton Restart sous le score final
-            restartButton.setBounds(WIDTH / 2 - 75, yGameOver + 80, 150, 40);
+            // Afficher le high score
+            String highScoreText = "High Score: " + highScore;
+            int xHighScore = (WIDTH - g.getFontMetrics().stringWidth(highScoreText)) / 2;
+            g.drawString(highScoreText, xHighScore, yGameOver + 70); // Positionner sous le score final
+
+            // Positionner le bouton Restart sous le high score
+            restartButton.setBounds(WIDTH / 2 - 75, yGameOver + 100, 150, 40);
             restartButton.setVisible(true); // Afficher le bouton Restart lors du game over
         }
     }
