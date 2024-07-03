@@ -102,8 +102,8 @@ public class SnakeModel {
 
     public void eatFood(FoodModel foodModel) {
         if (x[0] == foodModel.getFoodX() && y[0] == foodModel.getFoodY()) {
-            length++;
-            foodEaten++;
+            length += 0.5;
+            foodEaten += 0.5;
             foodModel.spawn(); // Réinitialiser la position de la nourriture
 
             // Ajouter un nouveau segment de serpent à la position actuelle de la tête
