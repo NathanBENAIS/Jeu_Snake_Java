@@ -76,10 +76,12 @@ public class GamePanelView extends JPanel {
             }
         });
         add(startButton);
-
         // Quit button initialization
         quitButton = new JButton("Quitter");
-        quitButton.setBounds(WIDTH / 2 - 75, HEIGHT - 80, 150, 40);
+        // Calculate position for bottom right
+        int quitButtonX = WIDTH - 160; // 150 width + 10 padding
+        int quitButtonY = HEIGHT - 50; // 40 height + 40 padding
+        quitButton.setBounds(quitButtonX, quitButtonY, 150, 40);
         quitButton.setFont(new Font("Sans serif", Font.BOLD, 14));
         quitButton.setBackground(new Color(59, 89, 182));
         quitButton.setForeground(Color.WHITE);
@@ -133,37 +135,37 @@ public class GamePanelView extends JPanel {
         add(restartButton);
 
         // Checkbox initialization
-        foodFilterCheckBox = new JCheckBox("Filtrer Food");
-        foodFilterCheckBox.setBounds(10, 10, 150, 30);
+        foodFilterCheckBox = new JCheckBox("Food : you gain 1 point !");
+        foodFilterCheckBox.setBounds(10, 10, 1500, 30);
         foodFilterCheckBox.setSelected(true);
         foodFilterCheckBox.setForeground(Color.WHITE);
         foodFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodFilterCheckBox.setVisible(false);
         add(foodFilterCheckBox);
 
-        foodBoostFilterCheckBox = new JCheckBox("Filtrer FoodBoost");
-        foodBoostFilterCheckBox.setBounds(10, 40, 150, 30);
+        foodBoostFilterCheckBox = new JCheckBox("FoodBoost : your speed is doubled but you gain 2 points");
+        foodBoostFilterCheckBox.setBounds(10, 40, 2000, 30);
         foodBoostFilterCheckBox.setSelected(true);
         foodBoostFilterCheckBox.setForeground(Color.WHITE);
         foodBoostFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodBoostFilterCheckBox.setVisible(false);
         add(foodBoostFilterCheckBox);
 
-        foodDeadFilterCheckBox = new JCheckBox("Filtrer FoodDead");
-        foodDeadFilterCheckBox.setBounds(10, 70, 150, 30);
-        foodDeadFilterCheckBox.setSelected(true);
-        foodDeadFilterCheckBox.setForeground(Color.WHITE);
-        foodDeadFilterCheckBox.setBackground(Color.DARK_GRAY);
-        foodDeadFilterCheckBox.setVisible(false);
-        add(foodDeadFilterCheckBox);
-
-        foodPoisonFilterCheckBox = new JCheckBox("Filtrer FoodPoison");
-        foodPoisonFilterCheckBox.setBounds(10, 100, 150, 30);
+        foodPoisonFilterCheckBox = new JCheckBox("FoodPoison : you lose 2 points :(");
+        foodPoisonFilterCheckBox.setBounds(10, 100, 1500, 30);
         foodPoisonFilterCheckBox.setSelected(true);
         foodPoisonFilterCheckBox.setForeground(Color.WHITE);
         foodPoisonFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodPoisonFilterCheckBox.setVisible(false);
         add(foodPoisonFilterCheckBox);
+
+        foodDeadFilterCheckBox = new JCheckBox("FoodDead: if you touch this, the game ends ;)");
+        foodDeadFilterCheckBox.setBounds(10, 70, 1500, 30);
+        foodDeadFilterCheckBox.setSelected(true);
+        foodDeadFilterCheckBox.setForeground(Color.WHITE);
+        foodDeadFilterCheckBox.setBackground(Color.DARK_GRAY);
+        foodDeadFilterCheckBox.setVisible(false);
+        add(foodDeadFilterCheckBox);
 
         // Timer for adding FoodDead instances
         Timer addFoodDeadTimer = new Timer(5000, new ActionListener() {
@@ -284,7 +286,7 @@ public class GamePanelView extends JPanel {
             g.setFont(new Font("Sans serif", Font.BOLD, 40));
             String gameOverText = "Game Over";
             int xGameOver = (WIDTH - g.getFontMetrics().stringWidth(gameOverText)) / 2;
-            int yGameOver = HEIGHT / 3;
+            int yGameOver = HEIGHT / 3 + 15;
             g.drawString(gameOverText, xGameOver, yGameOver);
             g.setColor(Color.WHITE);
             g.setFont(new Font("Sans serif", Font.BOLD, 20));
