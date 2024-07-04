@@ -95,7 +95,12 @@ public class SnakeModel {
 
     public void eatFoodPoison(FoodPoisonModel foodPoisonModel) {
         // Décrémentez le score de 2
-        foodEaten -= 2;
+
+        if (foodEaten > 1) {
+            foodEaten -= 2;
+        } else {
+            foodEaten = 0;
+        }
 
         // Réduire la longueur du serpent de 2
         if (length > 2) {

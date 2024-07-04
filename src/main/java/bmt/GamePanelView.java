@@ -8,7 +8,7 @@ public class GamePanelView extends JPanel {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
     private static final int UNIT_SIZE = 20;
-    private static final int GAME_SPEED = 80; // Vitesse du jeu en millisecondes
+    private static final int GAME_SPEED = 120; // Vitesse du jeu en millisecondes
 
     private final SnakeModel snakeModel;
     private final FoodModel foodModel;
@@ -18,6 +18,7 @@ public class GamePanelView extends JPanel {
     private final java.util.List<FoodDeadModel> foodDeadList; // Liste pour plusieurs instances de nourriture morte
     private JButton restartButton;
     private JButton startButton; // Bouton Start
+    private JButton quitButton; // Bouton Quitter
     private JLabel titleLabel; // Titre du jeu
     private Timer gameTimer; // Timer pour le jeu
     private int highScore = 0; // Variable pour stocker le high score
@@ -74,6 +75,37 @@ public class GamePanelView extends JPanel {
         });
 
         add(startButton);
+
+        /****/
+        // Création du bouton Quitter
+        quitButton = new JButton("Quitter");
+        quitButton.setBounds(WIDTH / 2 - 75, HEIGHT - 80, 150, 40); // Position en bas de la fenêtre
+        quitButton.setFont(new Font("Sans serif", Font.BOLD, 14));
+        quitButton.setBackground(new Color(59, 89, 182));
+        quitButton.setForeground(Color.WHITE);
+        quitButton.setFocusPainted(false);
+        quitButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        quitButton.setVisible(false); // Rendre le bouton invisible initialement
+
+        quitButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                quitButton.setBackground(new Color(89, 119, 222));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                quitButton.setBackground(new Color(59, 89, 182));
+            }
+        });
+
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0); // Fermer l'application
+            }
+        });
+
+        add(quitButton);
+        /****/
 
         // Création du bouton Restart avec style personnalisé
         restartButton = new JButton("Restart");
@@ -142,6 +174,8 @@ public class GamePanelView extends JPanel {
                     }
 
                     repaint();
+                } else {
+                    endGame(); // Afficher les boutons lorsque le jeu est terminé
                 }
             }
         });
@@ -154,7 +188,13 @@ public class GamePanelView extends JPanel {
         }
         snakeModel.restartGame(); // Réinitialiser le modèle de serpent
         foodDeadList.clear(); // Vider la liste de nourriture morte pour un nouveau départ
-        startGame(); // Redémarrer le jeu avec un nouveau timer
+        startGame();
+        quitButton.setVisible(false);
+    }
+
+    private void endGame() {
+        restartButton.setVisible(true);
+        quitButton.setVisible(true);
     }
 
     private void addFoodDead() {
@@ -260,6 +300,7 @@ public class GamePanelView extends JPanel {
                     if (!snakeModel.isRunning() && restartButton.isVisible()) {
                         snakeModel.restartGame();
                         restartButton.setVisible(false);
+                        quitButton.setVisible(false); // Cacher le bouton Quitter après avoir redémarré
                         restartGame();
                     }
                     break;
