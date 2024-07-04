@@ -1,8 +1,8 @@
 package bmt;
 
-import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class FoodController {
     private final GamePanelView gameView;
     private final SnakeModel snakeModel;
 
-    private FoodPoisonModel foodPoisonModel; // Ajouter l'instance de FoodPoisonModel
+    private FoodPoisonModel foodPoisonModel;
 
     private Timer spawnFoodTimer;
     private Timer addFoodDeadTimer;
@@ -27,7 +27,7 @@ public class FoodController {
         this.foodDeadList = new ArrayList<>();
         this.gameView = gameView;
         this.snakeModel = snakeModel;
-        this.foodPoisonModel = new FoodPoisonModel(); // Initialiser FoodPoisonModel
+        this.foodPoisonModel = new FoodPoisonModel();
 
         setupFoodSpawning();
         setupFoodDeadAdding();
@@ -129,7 +129,7 @@ public class FoodController {
         while (checkCollisionWithSnake(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY())) {
             foodPoisonModel.spawn();
         }
-        despawnFoodPoisonTimer.setRepeats(false); // Assurez-vous qu'il ne se répète pas
+        despawnFoodPoisonTimer.setRepeats(false);
         despawnFoodPoisonTimer.start();
         gameView.repaint();
     }

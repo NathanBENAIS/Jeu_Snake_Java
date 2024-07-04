@@ -69,6 +69,10 @@ public class FoodPoisonModel {
         return isVisible;
     }
 
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+    }
+
     public int getFoodX() {
         return foodX;
     }

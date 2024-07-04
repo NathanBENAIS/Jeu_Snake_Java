@@ -5,6 +5,8 @@ import java.awt.*;
 public class FoodDeadModel {
     private int foodX;
     private int foodY;
+    private boolean visible;
+
     private static final int UNIT_SIZE = 20;
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
@@ -31,5 +33,13 @@ public class FoodDeadModel {
 
     public int getFoodY() {
         return foodY;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }
