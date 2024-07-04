@@ -141,11 +141,12 @@ public class GamePanelView extends JPanel {
         foodFilterCheckBox.setForeground(Color.WHITE);
         foodFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodFilterCheckBox.setVisible(false);
+        foodFilterCheckBox.setEnabled(false); // Disable the checkbox
         add(foodFilterCheckBox);
 
         foodBoostFilterCheckBox = new JCheckBox("FoodBoost : your speed is doubled but you gain 2 points");
         foodBoostFilterCheckBox.setBounds(10, 40, 2000, 30);
-        foodBoostFilterCheckBox.setSelected(true);
+        foodBoostFilterCheckBox.setSelected(false);
         foodBoostFilterCheckBox.setForeground(Color.WHITE);
         foodBoostFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodBoostFilterCheckBox.setVisible(false);
@@ -153,7 +154,7 @@ public class GamePanelView extends JPanel {
 
         foodPoisonFilterCheckBox = new JCheckBox("FoodPoison : you lose 2 points :(");
         foodPoisonFilterCheckBox.setBounds(10, 100, 1500, 30);
-        foodPoisonFilterCheckBox.setSelected(true);
+        foodPoisonFilterCheckBox.setSelected(false);
         foodPoisonFilterCheckBox.setForeground(Color.WHITE);
         foodPoisonFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodPoisonFilterCheckBox.setVisible(false);
@@ -161,7 +162,7 @@ public class GamePanelView extends JPanel {
 
         foodDeadFilterCheckBox = new JCheckBox("FoodDead: if you touch this, the game ends ;)");
         foodDeadFilterCheckBox.setBounds(10, 70, 1500, 30);
-        foodDeadFilterCheckBox.setSelected(true);
+        foodDeadFilterCheckBox.setSelected(false);
         foodDeadFilterCheckBox.setForeground(Color.WHITE);
         foodDeadFilterCheckBox.setBackground(Color.DARK_GRAY);
         foodDeadFilterCheckBox.setVisible(false);
