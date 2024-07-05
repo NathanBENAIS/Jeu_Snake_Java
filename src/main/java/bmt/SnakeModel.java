@@ -5,10 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SnakeModel {
+    private SnakeController snakeController;
     private static final int UNIT_SIZE = 20;
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
-    private static final int BOOST_DURATION = 5000;
+    private static final int BOOST_DURATION = 7000;
 
     private int[] x = new int[WIDTH * HEIGHT / UNIT_SIZE / UNIT_SIZE];
     private int[] y = new int[WIDTH * HEIGHT / UNIT_SIZE / UNIT_SIZE];
@@ -21,7 +22,8 @@ public class SnakeModel {
     private boolean boosted = false;
     private Timer boostTimer;
 
-    public SnakeModel() {
+    public SnakeModel(SnakeController snakeController) {
+        this.snakeController = snakeController;
         x[0] = 0;
         y[0] = 0;
     }
@@ -51,10 +53,12 @@ public class SnakeModel {
     public void checkCollision() {
         if (x[0] < 0 || x[0] >= WIDTH || y[0] < 0 || y[0] >= HEIGHT) {
             running = false;
+            snakeController.playGameOverSound();
         }
         for (int i = length; i > 0; i--) {
             if (x[0] == x[i] && y[0] == y[i]) {
                 running = false;
+                snakeController.playGameOverSound();
                 break;
             }
         }
@@ -67,6 +71,7 @@ public class SnakeModel {
         if (x[0] == foodX && y[0] == foodY) {
             length++;
             foodEaten++;
+            snakeController.playEatAppleSound();
         }
     }
 
@@ -76,6 +81,7 @@ public class SnakeModel {
             boosted = true;
             length++;
             foodEaten++;
+            snakeController.playBoostSound();
         }
     }
 
@@ -83,6 +89,9 @@ public class SnakeModel {
         if (x[0] == foodX && y[0] == foodY) {
             length++;
             foodDeadModel.spawn();
+            snakeController.playEatDeadSound();
+            running = false; // Game over when snake eats FoodDead
+            
         }
     }
 
@@ -90,6 +99,7 @@ public class SnakeModel {
         if (x[0] == foodX && y[0] == foodY) {
             eatFoodPoison(foodPoisonModel);
             foodPoisonModel.spawn();
+            snakeController.playEatPoisonSound();
         }
     }
 

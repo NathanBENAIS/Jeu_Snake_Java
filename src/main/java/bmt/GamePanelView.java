@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
 public class GamePanelView extends JPanel {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
@@ -20,6 +21,7 @@ public class GamePanelView extends JPanel {
     private JButton startButton;
     private JButton quitButton;
     private JLabel titleLabel;
+    private JLabel logoLabel;
     private JCheckBox foodFilterCheckBox;
     private JCheckBox foodBoostFilterCheckBox;
     private JCheckBox foodDeadFilterCheckBox;
@@ -41,13 +43,21 @@ public class GamePanelView extends JPanel {
         addKeyListener(new MyKeyAdapter());
 
         setLayout(null);
+        repaint();
 
         // Title label initialization
+        
         titleLabel = new JLabel("Snake Game", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Sans serif", Font.BOLD, 36));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBounds(WIDTH / 2 - 150, HEIGHT / 3 - 100, 300, 50);
-        add(titleLabel);
+        
+    
+        ImageIcon logoIcon = new ImageIcon("C:/Users/RiadK/OneDrive/Bureau/Snake/Jeu_Snake_Java/src/main/resources/bmt/snakee.png");
+        // Créez un JLabel pour afficher l'image
+        logoLabel = new JLabel(logoIcon);
+        logoLabel.setBounds(WIDTH / 2 - 307, HEIGHT / 3 - 320, 600, 600); // Ajustez les coordonnées et la taille selon vos besoins
+        add(logoLabel);
 
         // Start button initialization
         startButton = new JButton("Start");
@@ -72,6 +82,7 @@ public class GamePanelView extends JPanel {
                 startGame();
                 startButton.setVisible(false);
                 titleLabel.setVisible(false);
+                logoLabel.setVisible(false);
                 showFiltersAndQuit(false); // Hide filters and quit button
             }
         });
@@ -190,7 +201,8 @@ public class GamePanelView extends JPanel {
                     snakeModel.checkCollision();
                     snakeModel.checkFood(foodModel.getFoodX(), foodModel.getFoodY());
                     snakeModel.checkFoodBoost(foodBoostModel.getFoodX(), foodBoostModel.getFoodY());
-                    snakeModel.checkFoodPoison(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY(), foodPoisonModel);
+                    snakeModel.checkFoodPoison(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY(),
+                            foodPoisonModel);
                     snakeModel.eatFood(foodModel);
                     snakeModel.eatFoodBoost(foodBoostModel);
                     for (FoodDeadModel foodDead : foodDeadList) {
@@ -221,11 +233,16 @@ public class GamePanelView extends JPanel {
     }
 
     private void endGame() {
+        if (snakeModel.getFoodEaten() > highScore) {
+            highScore = snakeModel.getFoodEaten();
+        }
+        
         // Show filters and quit button when game ends
         showFiltersAndQuit(true);
 
         // Show restart button
         restartButton.setVisible(true);
+        repaint(); 
     }
 
     private void showFiltersAndQuit(boolean show) {
@@ -250,6 +267,9 @@ public class GamePanelView extends JPanel {
             if (foodFilterCheckBox.isSelected()) {
                 foodModel.draw(g);
             }
+            if (foodFilterCheckBox.isSelected()) {
+                foodModel.draw(g); // Update to use the new draw() method
+            }
             if (foodBoostFilterCheckBox.isSelected()) {
                 foodBoostModel.draw(g);
             }
@@ -268,17 +288,22 @@ public class GamePanelView extends JPanel {
                     g.setColor(Color.GREEN);
                 }
                 if (snakeModel.isBoosted()) {
-                    g.setColor(new Color(148, 0, 211));
+                    g.setColor(new Color(255, 255, 90));
                 }
                 g.fillRect(snakeModel.getX()[i], snakeModel.getY()[i], UNIT_SIZE, UNIT_SIZE);
             }
             g.setColor(Color.WHITE);
             g.setFont(new Font("Sans serif", Font.BOLD, 20));
             String scoreText = "Score: " + snakeModel.getFoodEaten();
-            FontMetrics fm = g.getFontMetrics();
-            int x = (WIDTH - fm.stringWidth(scoreText)) / 2;
+            //FontMetrics fm = g.getFontMetrics();
+            int x = 10;
             int y = 20;
             g.drawString(scoreText, x, y);
+
+            // Draw high score in top right
+            String highScoreText = "High Score: " + highScore;
+            int xHighScore = WIDTH - 10 - g.getFontMetrics().stringWidth(highScoreText);
+            g.drawString(highScoreText, xHighScore, 20);
         } else {
             if (snakeModel.getFoodEaten() > highScore) {
                 highScore = snakeModel.getFoodEaten();
@@ -307,21 +332,25 @@ public class GamePanelView extends JPanel {
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_Q:
                     if (snakeModel.getDirection() != 'R') {
                         snakeModel.setDirection('L');
                     }
                     break;
                 case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_D:
                     if (snakeModel.getDirection() != 'L') {
                         snakeModel.setDirection('R');
                     }
                     break;
                 case KeyEvent.VK_UP:
+                case KeyEvent.VK_Z:
                     if (snakeModel.getDirection() != 'D') {
                         snakeModel.setDirection('U');
                     }
                     break;
                 case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_S:
                     if (snakeModel.getDirection() != 'U') {
                         snakeModel.setDirection('D');
                     }

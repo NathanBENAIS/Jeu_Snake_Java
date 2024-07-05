@@ -2,8 +2,12 @@ package bmt;
 
 import java.awt.*;
 import java.util.Random;
+import javax.swing.ImageIcon;
 
 public class FoodModel {
+    private Image fruitImage;
+    // Add variables to store images for different fruits
+    private ImageIcon appleIcon = new ImageIcon("C:/Users/RiadK/OneDrive/Bureau/Snake/Jeu_Snake_Java/src/main/resources/bmt/apple.png");
     private int foodX;
     private int foodY;
     private boolean visible;
@@ -16,16 +20,30 @@ public class FoodModel {
     public FoodModel() {
         random = new Random();
         spawn();
+
+        fruitImage = appleIcon.getImage();
     }
 
     public void spawn() {
+        // Add logic to randomly choose which fruit to spawn
+        int randomFruit = random.nextInt(4); // Assuming 4 types of fruits
+
+        switch (randomFruit) {
+            case 0:
+                fruitImage = appleIcon.getImage();
+                break;
+            // Add cases for other fruits
+            default:
+                fruitImage = appleIcon.getImage(); // Default to apple
+                break;
+        }
+
         foodX = random.nextInt(WIDTH / UNIT_SIZE) * UNIT_SIZE;
         foodY = random.nextInt(HEIGHT / UNIT_SIZE) * UNIT_SIZE;
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.RED);
-        g.fillOval(foodX, foodY, UNIT_SIZE, UNIT_SIZE);
+        g.drawImage(fruitImage, foodX, foodY, UNIT_SIZE, UNIT_SIZE, null);
     }
 
     public int getFoodX() {

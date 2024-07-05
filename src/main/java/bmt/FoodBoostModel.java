@@ -1,8 +1,13 @@
 package bmt;
 
 import java.awt.*;
+import javax.swing.ImageIcon;
+import java.util.Random;
 
 public class FoodBoostModel {
+    private Image fruitImage;
+    // Add variables to store images for different fruits
+    private ImageIcon appleIcon = new ImageIcon("C:/Users/RiadK/OneDrive/Bureau/Snake/Jeu_Snake_Java/src/main/resources/bmt/violet.png");
     private int foodX;
     private int foodY;
     private boolean visible;
@@ -11,20 +16,31 @@ public class FoodBoostModel {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
 
-    private static final Color FOOD_COLOR = new Color(148, 0, 211); // Violet color
+    private Random random = new Random();
 
     public FoodBoostModel() {
         spawn();
+        fruitImage = appleIcon.getImage();
     }
 
     public void spawn() {
+        int randomFruit = random.nextInt(4); // Assuming 4 types of fruits
+
+        switch (randomFruit) {
+            case 0:
+                fruitImage = appleIcon.getImage();
+                break;
+            // Add cases for other fruits
+            default:
+                fruitImage = appleIcon.getImage(); // Default to apple
+                break;
+        }
         foodX = (int) (Math.random() * (WIDTH / UNIT_SIZE)) * UNIT_SIZE;
         foodY = (int) (Math.random() * (HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
     }
 
     public void draw(Graphics g) {
-        g.setColor(FOOD_COLOR);
-        g.fillRect(foodX, foodY, UNIT_SIZE, UNIT_SIZE);
+        g.drawImage(fruitImage, foodX, foodY, UNIT_SIZE, UNIT_SIZE, null);
     }
 
     public int getFoodX() {

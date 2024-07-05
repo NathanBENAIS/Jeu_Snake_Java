@@ -1,29 +1,46 @@
 package bmt;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import java.util.Random;
 
 public class FoodPoisonModel {
+    private Image fruitImage;
+    // Add variables to store images for different fruits
+    private ImageIcon appleIcon = new ImageIcon("C:/Users/RiadK/OneDrive/Bureau/Snake/Jeu_Snake_Java/src/main/resources/bmt/vert.png");
     private int foodX;
     private int foodY;
     private static final int UNIT_SIZE = 20;
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
-    private static final Color FOOD_COLOR = Color.GREEN;
 
     private boolean isVisible = false; // Pour suivre la visibilité du poison
     private Timer spawnTimer; // Timer pour faire apparaître le FoodPoison
     private Timer disappearTimer; // Timer pour faire disparaître le FoodPoison
+    private Random random = new Random();
 
     public FoodPoisonModel() {
         spawn();
         setupTimers(); // Initialisation des timers
+        fruitImage = appleIcon.getImage();
     }
 
     public void spawn() {
+        int randomFruit = random.nextInt(4); // Assuming 4 types of fruits
+
+        switch (randomFruit) {
+            case 0:
+                fruitImage = appleIcon.getImage();
+                break;
+            // Add cases for other fruits
+            default:
+                fruitImage = appleIcon.getImage(); // Default to apple
+                break;
+        }
         foodX = (int) (Math.random() * (WIDTH / UNIT_SIZE)) * UNIT_SIZE;
         foodY = (int) (Math.random() * (HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
         isVisible = true;
@@ -34,10 +51,7 @@ public class FoodPoisonModel {
     }
 
     public void draw(Graphics g) {
-        if (isVisible) {
-            g.setColor(FOOD_COLOR);
-            g.fillRect(foodX, foodY, UNIT_SIZE, UNIT_SIZE);
-        }
+        g.drawImage(fruitImage, foodX, foodY, UNIT_SIZE, UNIT_SIZE, null);
     }
 
     private void setupTimers() {
