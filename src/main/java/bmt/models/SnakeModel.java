@@ -1,4 +1,6 @@
-package bmt;
+package bmt.models;
+
+import bmt.controllers.SnakeController;
 
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
@@ -133,7 +135,7 @@ public class SnakeModel {
         boostTimer.start();
     }
 
-    public void eatFood(FoodModel foodModel) {
+    public void eatFood(FoodModelBase foodModel) {
         if (x[0] == foodModel.getFoodX() && y[0] == foodModel.getFoodY()) {
             length += 0.5;
             foodEaten += 0.5;

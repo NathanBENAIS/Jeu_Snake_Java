@@ -1,4 +1,8 @@
-package bmt;
+package bmt.controllers;
+
+import bmt.models.*;
+import bmt.views.GamePanelView;
+import bmt.models.FoodModelBase;
 
 import javax.swing.*;
 
@@ -7,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FoodController {
-    private final FoodModel foodModel;
+    private final FoodModelBase foodModel;
     private final FoodBoostModel foodBoostModel;
     private final List<FoodDeadModel> foodDeadList;
     private final GamePanelView gameView;
@@ -20,7 +24,7 @@ public class FoodController {
     private Timer spawnFoodPoisonTimer;
     private Timer despawnFoodPoisonTimer;
 
-    public FoodController(FoodModel foodModel, FoodBoostModel foodBoostModel, GamePanelView gameView,
+    public FoodController(FoodModelBase foodModel, FoodBoostModel foodBoostModel, GamePanelView gameView,
             SnakeModel snakeModel) {
         this.foodModel = foodModel;
         this.foodBoostModel = foodBoostModel;

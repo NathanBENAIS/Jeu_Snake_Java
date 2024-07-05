@@ -1,8 +1,13 @@
-package bmt;
+package bmt.views;
+
+import bmt.models.*;
+import bmt.models.FoodModelBase;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GamePanelView extends JPanel {
@@ -12,10 +17,10 @@ public class GamePanelView extends JPanel {
     private static final int GAME_SPEED = 120;
 
     private final SnakeModel snakeModel;
-    private final FoodModel foodModel;
-    private final FoodBoostModel foodBoostModel;
-    private final FoodPoisonModel foodPoisonModel;
-    private final java.util.List<FoodDeadModel> foodDeadList;
+    private final FoodModelBase foodModel;
+    private FoodBoostModel foodBoostModel;
+    private FoodPoisonModel foodPoisonModel;
+    private List<FoodDeadModel> foodDeadList;
 
     private JButton restartButton;
     private JButton startButton;
@@ -29,13 +34,12 @@ public class GamePanelView extends JPanel {
     private Timer gameTimer;
     private int highScore = 0;
 
-    public GamePanelView(final SnakeModel snakeModel, final FoodModel foodModel, final FoodBoostModel foodBoostModel,
-            final FoodPoisonModel foodPoisonModel) {
+    public GamePanelView(final SnakeModel snakeModel) {
         this.snakeModel = snakeModel;
-        this.foodModel = foodModel;
-        this.foodBoostModel = foodBoostModel;
-        this.foodPoisonModel = foodPoisonModel;
-        this.foodDeadList = new java.util.ArrayList<>();
+        this.foodModel = new FoodModel();
+        this.foodBoostModel = null;
+        this.foodPoisonModel = null;
+        this.foodDeadList = new ArrayList<>();
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.DARK_GRAY);
@@ -43,25 +47,24 @@ public class GamePanelView extends JPanel {
         addKeyListener(new MyKeyAdapter());
 
         setLayout(null);
-        repaint();
+        //repaint();
 
         // Title label initialization
-        
+
         titleLabel = new JLabel("Snake Game", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Sans serif", Font.BOLD, 36));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBounds(WIDTH / 2 - 150, HEIGHT / 3 - 100, 300, 50);
-        
-    
-        ImageIcon logoIcon = new ImageIcon("C:/Users/RiadK/OneDrive/Bureau/Snake/Jeu_Snake_Java/src/main/resources/bmt/snakee.png");
+
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/bmt/logo.png"));
         // Créez un JLabel pour afficher l'image
         logoLabel = new JLabel(logoIcon);
-        logoLabel.setBounds(WIDTH / 2 - 307, HEIGHT / 3 - 320, 600, 600); // Ajustez les coordonnées et la taille selon vos besoins
+        logoLabel.setBounds(WIDTH / 2 - 300, HEIGHT / 3 - 280, 600, 600); // Ajustez les coordonnées et la taille selon vos besoins
         add(logoLabel);
 
         // Start button initialization
         startButton = new JButton("Start");
-        startButton.setBounds(WIDTH / 2 - 75, HEIGHT / 2 - 20, 150, 50);
+        startButton.setBounds(WIDTH / 2 - 75, HEIGHT / 2 + 90, 150, 50);
         startButton.setFont(new Font("Sans serif", Font.BOLD, 14));
         startButton.setBackground(new Color(59, 89, 182));
         startButton.setForeground(Color.WHITE);
@@ -193,22 +196,41 @@ public class GamePanelView extends JPanel {
         if (gameTimer != null) {
             gameTimer.stop();
         }
+
+        if (foodBoostFilterCheckBox.isSelected()) {
+            foodBoostModel = new FoodBoostModel();
+        }
+
+        if (foodPoisonFilterCheckBox.isSelected()) {
+            foodPoisonModel = new FoodPoisonModel();
+        }
+
+        if (!foodDeadFilterCheckBox.isSelected()) {
+            foodDeadList = new ArrayList<>();
+        }
+
         gameTimer = new Timer(GAME_SPEED, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (snakeModel.isRunning()) {
                     snakeModel.move();
                     snakeModel.checkCollision();
+                    if (foodBoostModel != null) {
+                        snakeModel.checkFoodBoost(foodBoostModel.getFoodX(), foodBoostModel.getFoodY());
+                        snakeModel.eatFoodBoost(foodBoostModel);
+                    }
+                    if (foodPoisonModel != null) {
+                        snakeModel.checkFoodPoison(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY(),
+                                foodPoisonModel);
+                    }
                     snakeModel.checkFood(foodModel.getFoodX(), foodModel.getFoodY());
-                    snakeModel.checkFoodBoost(foodBoostModel.getFoodX(), foodBoostModel.getFoodY());
-                    snakeModel.checkFoodPoison(foodPoisonModel.getFoodX(), foodPoisonModel.getFoodY(),
-                            foodPoisonModel);
                     snakeModel.eatFood(foodModel);
-                    snakeModel.eatFoodBoost(foodBoostModel);
-                    for (FoodDeadModel foodDead : foodDeadList) {
-                        if (snakeModel.getX()[0] == foodDead.getFoodX()
-                                && snakeModel.getY()[0] == foodDead.getFoodY()) {
-                            snakeModel.setRunning(false);
+                    if (foodDeadFilterCheckBox.isSelected()) {
+                        for (FoodDeadModel foodDead : foodDeadList) {
+                            if (snakeModel.getX()[0] == foodDead.getFoodX()
+                                    && snakeModel.getY()[0] == foodDead.getFoodY()) {
+                                snakeModel.setRunning(false);
+                            }
                         }
                     }
                     repaint();
@@ -266,9 +288,6 @@ public class GamePanelView extends JPanel {
         if (snakeModel.isRunning()) {
             if (foodFilterCheckBox.isSelected()) {
                 foodModel.draw(g);
-            }
-            if (foodFilterCheckBox.isSelected()) {
-                foodModel.draw(g); // Update to use the new draw() method
             }
             if (foodBoostFilterCheckBox.isSelected()) {
                 foodBoostModel.draw(g);
