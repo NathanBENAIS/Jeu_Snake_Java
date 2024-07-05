@@ -60,7 +60,7 @@ public class SnakeModel {
         for (int i = length; i > 0; i--) {
             if (x[0] == x[i] && y[0] == y[i]) {
                 running = false;
-                snakeController.playGameOverSound();
+                snakeController.playEatDeadSound();
                 break;
             }
         }

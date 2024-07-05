@@ -59,7 +59,7 @@ public class SnakeController {
 
     public void playEatDeadSound() {
         // Adjust this path according to where your sound file is located
-        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/dead2.wav";
+        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/death3.wav";
         playSound(soundFilePath);
     }
 }
