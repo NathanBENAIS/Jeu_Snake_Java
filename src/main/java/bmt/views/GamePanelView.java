@@ -1,14 +1,15 @@
 package bmt.views;
 
 import bmt.models.*;
-import bmt.models.FoodModelBase;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class GamePanelView extends JPanel {
     private static final int WIDTH = 500;
@@ -17,22 +18,24 @@ public class GamePanelView extends JPanel {
     private static final int GAME_SPEED = 120;
 
     private final SnakeModel snakeModel;
-    private final FoodModelBase foodModel;
+    private final FoodModel foodModel;
     private FoodBoostModel foodBoostModel;
     private FoodPoisonModel foodPoisonModel;
     private List<FoodDeadModel> foodDeadList;
 
     private JButton restartButton;
-    private JButton startButton;
     private JButton quitButton;
     private JLabel titleLabel;
     private JLabel logoLabel;
+    private JLabel keysLabel;
+    private JLabel spaceLabel;
     private JCheckBox foodFilterCheckBox;
     private JCheckBox foodBoostFilterCheckBox;
     private JCheckBox foodDeadFilterCheckBox;
     private JCheckBox foodPoisonFilterCheckBox;
     private Timer gameTimer;
     private int highScore = 0;
+    private Image gameOverImage;
 
     public GamePanelView(final SnakeModel snakeModel) {
         this.snakeModel = snakeModel;
@@ -42,73 +45,86 @@ public class GamePanelView extends JPanel {
         this.foodDeadList = new ArrayList<>();
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.DARK_GRAY);
+        setBackground(new Color(127,255,0));
         setFocusable(true);
         addKeyListener(new MyKeyAdapter());
 
         setLayout(null);
-        //repaint();
+        repaint();
+
+        // Load the game over image
+        try {
+            gameOverImage = ImageIO.read(new File("/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/gameover.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Title label initialization
-
         titleLabel = new JLabel("Snake Game", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Sans serif", Font.BOLD, 36));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBounds(WIDTH / 2 - 150, HEIGHT / 3 - 100, 300, 50);
+        //add(titleLabel);
 
         ImageIcon logoIcon = new ImageIcon(getClass().getResource("/bmt/logo.png"));
+        ImageIcon KeysIcon = new ImageIcon(getClass().getResource("/bmt/keys.png"));
         // Créez un JLabel pour afficher l'image
         logoLabel = new JLabel(logoIcon);
         logoLabel.setBounds(WIDTH / 2 - 300, HEIGHT / 3 - 280, 600, 600); // Ajustez les coordonnées et la taille selon vos besoins
         add(logoLabel);
 
-        // Start button initialization
-        startButton = new JButton("Start");
-        startButton.setBounds(WIDTH / 2 - 75, HEIGHT / 2 + 90, 150, 50);
-        startButton.setFont(new Font("Sans serif", Font.BOLD, 14));
-        startButton.setBackground(new Color(59, 89, 182));
-        startButton.setForeground(Color.WHITE);
-        startButton.setFocusPainted(false);
-        startButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
-        startButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                startButton.setBackground(new Color(89, 119, 222));
-            }
+        keysLabel = new JLabel(KeysIcon);
+        keysLabel.setBounds(WIDTH / 2 - 130, HEIGHT / 3 + 20, 600, 600); // Ajustez les coordonnées et la taille selon vos besoins
+        add(keysLabel);
 
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                startButton.setBackground(new Color(59, 89, 182));
-            }
-        });
-        startButton.addActionListener(new ActionListener() {
+        // Create a JLabel for the start image
+        final ImageIcon startIcon = new ImageIcon(getClass().getResource("/bmt/start.png"));
+        final JLabel startImageLabel = new JLabel(startIcon);
+        startImageLabel.setBounds(WIDTH / 2 - 100, HEIGHT / 2 + 90, startIcon.getIconWidth(), startIcon.getIconHeight());
+        startImageLabel.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 startGame();
-                startButton.setVisible(false);
+                startImageLabel.setVisible(false);
                 titleLabel.setVisible(false);
                 logoLabel.setVisible(false);
+                keysLabel.setVisible(false);
                 showFiltersAndQuit(false); // Hide filters and quit button
             }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // Optionally, change image appearance on mouse hover
+                startImageLabel.setIcon(new ImageIcon(getClass().getResource("/bmt/start.png")));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // Optionally, change image appearance on mouse exit
+                startImageLabel.setIcon(startIcon);
+            }
         });
-        add(startButton);
+        add(startImageLabel);
+
         // Quit button initialization
-        quitButton = new JButton("Quitter");
-        // Calculate position for bottom right
+        final ImageIcon quitIcon = new ImageIcon(getClass().getResource("/bmt/exit.png"));
+        quitButton = new JButton(quitIcon);
         int quitButtonX = WIDTH - 160; // 150 width + 10 padding
-        int quitButtonY = HEIGHT - 50; // 40 height + 40 padding
-        quitButton.setBounds(quitButtonX, quitButtonY, 150, 40);
-        quitButton.setFont(new Font("Sans serif", Font.BOLD, 14));
-        quitButton.setBackground(new Color(59, 89, 182));
-        quitButton.setForeground(Color.WHITE);
-        quitButton.setFocusPainted(false);
-        quitButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        int quitButtonY = HEIGHT - 80; // 40 height + 40 padding
+        quitButton.setBounds(quitButtonX, quitButtonY, quitIcon.getIconWidth(), quitIcon.getIconHeight());
         quitButton.setVisible(false);
+        quitButton.setFocusPainted(false);
+        quitButton.setBorder(BorderFactory.createEmptyBorder());
+        quitButton.setContentAreaFilled(false); // Make button transparent
         quitButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                quitButton.setBackground(new Color(89, 119, 222));
+                // Optionally, change image appearance on mouse hover
+                quitButton.setIcon(new ImageIcon(getClass().getResource("/bmt/exit.png")));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                quitButton.setBackground(new Color(59, 89, 182));
+                // Optionally, change image appearance on mouse exit
+                quitButton.setIcon(quitIcon);
             }
         });
         quitButton.addActionListener(new ActionListener() {
@@ -119,22 +135,24 @@ public class GamePanelView extends JPanel {
         });
         add(quitButton);
 
+
         // Restart button initialization
-        restartButton = new JButton("Restart");
-        restartButton.setBounds(WIDTH / 2 - 75, HEIGHT / 2 + 60, 150, 40);
+        final ImageIcon restartIcon = new ImageIcon(getClass().getResource("/bmt/restart.png"));
+        restartButton = new JButton(restartIcon);
+        restartButton.setBounds(WIDTH / 2, HEIGHT / 2, restartIcon.getIconWidth(), restartIcon.getIconHeight());
         restartButton.setVisible(false);
-        restartButton.setFont(new Font("Sans serif", Font.BOLD, 14));
-        restartButton.setBackground(new Color(59, 89, 182));
-        restartButton.setForeground(Color.WHITE);
         restartButton.setFocusPainted(false);
-        restartButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        restartButton.setBorder(BorderFactory.createEmptyBorder());
+        restartButton.setContentAreaFilled(false); // Make button transparent
         restartButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                restartButton.setBackground(new Color(89, 119, 222));
+                // Optionally, change image appearance on mouse hover
+                restartButton.setIcon(new ImageIcon(getClass().getResource("/bmt/restart.png")));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                restartButton.setBackground(new Color(59, 89, 182));
+                // Optionally, change image appearance on mouse exit
+                restartButton.setIcon(restartIcon);
             }
         });
         restartButton.addActionListener(new ActionListener() {
@@ -143,17 +161,27 @@ public class GamePanelView extends JPanel {
                 snakeModel.restartGame();
                 restartButton.setVisible(false);
                 quitButton.setVisible(false);
+                spaceLabel.setVisible(false);
                 restartGame();
             }
         });
         add(restartButton);
 
+
+        // Space label initialization
+        spaceLabel = new JLabel("(Or use Space)", SwingConstants.CENTER);
+        spaceLabel.setFont(new Font("Sans serif", Font.PLAIN, 14));
+        spaceLabel.setForeground(Color.BLACK);
+        spaceLabel.setBounds(WIDTH / 2 - 75, HEIGHT / 2 + 105, 150, 30); // Position it just below the restart button
+        spaceLabel.setVisible(false);
+        add(spaceLabel);
+
         // Checkbox initialization
         foodFilterCheckBox = new JCheckBox("Food : you gain 1 point !");
         foodFilterCheckBox.setBounds(10, 10, 1500, 30);
         foodFilterCheckBox.setSelected(true);
-        foodFilterCheckBox.setForeground(Color.WHITE);
-        foodFilterCheckBox.setBackground(Color.DARK_GRAY);
+        foodFilterCheckBox.setForeground(Color.BLACK);
+        foodFilterCheckBox.setBackground(new Color(127,255,0));
         foodFilterCheckBox.setVisible(false);
         foodFilterCheckBox.setEnabled(false); // Disable the checkbox
         add(foodFilterCheckBox);
@@ -161,24 +189,24 @@ public class GamePanelView extends JPanel {
         foodBoostFilterCheckBox = new JCheckBox("FoodBoost : your speed is doubled but you gain 2 points");
         foodBoostFilterCheckBox.setBounds(10, 40, 2000, 30);
         foodBoostFilterCheckBox.setSelected(false);
-        foodBoostFilterCheckBox.setForeground(Color.WHITE);
-        foodBoostFilterCheckBox.setBackground(Color.DARK_GRAY);
+        foodBoostFilterCheckBox.setForeground(Color.BLACK);
+        foodBoostFilterCheckBox.setBackground(new Color(127,255,0));
         foodBoostFilterCheckBox.setVisible(false);
         add(foodBoostFilterCheckBox);
 
         foodPoisonFilterCheckBox = new JCheckBox("FoodPoison : you lose 2 points :(");
         foodPoisonFilterCheckBox.setBounds(10, 100, 1500, 30);
         foodPoisonFilterCheckBox.setSelected(false);
-        foodPoisonFilterCheckBox.setForeground(Color.WHITE);
-        foodPoisonFilterCheckBox.setBackground(Color.DARK_GRAY);
+        foodPoisonFilterCheckBox.setForeground(Color.BLACK);
+        foodPoisonFilterCheckBox.setBackground(new Color(127,255,0));
         foodPoisonFilterCheckBox.setVisible(false);
         add(foodPoisonFilterCheckBox);
 
         foodDeadFilterCheckBox = new JCheckBox("FoodDead: if you touch this, the game ends ;)");
         foodDeadFilterCheckBox.setBounds(10, 70, 1500, 30);
         foodDeadFilterCheckBox.setSelected(false);
-        foodDeadFilterCheckBox.setForeground(Color.WHITE);
-        foodDeadFilterCheckBox.setBackground(Color.DARK_GRAY);
+        foodDeadFilterCheckBox.setForeground(Color.BLACK);
+        foodDeadFilterCheckBox.setBackground(new Color(127,255,0));
         foodDeadFilterCheckBox.setVisible(false);
         add(foodDeadFilterCheckBox);
 
@@ -258,13 +286,14 @@ public class GamePanelView extends JPanel {
         if (snakeModel.getFoodEaten() > highScore) {
             highScore = snakeModel.getFoodEaten();
         }
-        
+
         // Show filters and quit button when game ends
         showFiltersAndQuit(true);
 
-        // Show restart button
+        // Show restart button and space label
         restartButton.setVisible(true);
-        repaint(); 
+        spaceLabel.setVisible(true);
+        repaint();
     }
 
     private void showFiltersAndQuit(boolean show) {
@@ -304,17 +333,16 @@ public class GamePanelView extends JPanel {
                 if (i == 0) {
                     g.setColor(Color.WHITE);
                 } else {
-                    g.setColor(Color.GREEN);
+                    g.setColor(new Color(0, 150, 0));
                 }
                 if (snakeModel.isBoosted()) {
                     g.setColor(new Color(255, 255, 90));
                 }
                 g.fillRect(snakeModel.getX()[i], snakeModel.getY()[i], UNIT_SIZE, UNIT_SIZE);
             }
-            g.setColor(Color.WHITE);
+            g.setColor(Color.BLACK);
             g.setFont(new Font("Sans serif", Font.BOLD, 20));
             String scoreText = "Score: " + snakeModel.getFoodEaten();
-            //FontMetrics fm = g.getFontMetrics();
             int x = 10;
             int y = 20;
             g.drawString(scoreText, x, y);
@@ -327,22 +355,25 @@ public class GamePanelView extends JPanel {
             if (snakeModel.getFoodEaten() > highScore) {
                 highScore = snakeModel.getFoodEaten();
             }
-            g.setColor(Color.RED);
-            g.setFont(new Font("Sans serif", Font.BOLD, 40));
-            String gameOverText = "Game Over";
-            int xGameOver = (WIDTH - g.getFontMetrics().stringWidth(gameOverText)) / 2;
-            int yGameOver = HEIGHT / 3 + 15;
-            g.drawString(gameOverText, xGameOver, yGameOver);
-            g.setColor(Color.WHITE);
+            // Draw the game over image instead of text
+            if (gameOverImage != null) {
+                int imgX = (WIDTH - gameOverImage.getWidth(this)) / 2;
+                int imgY = HEIGHT / 3;
+                g.drawImage(gameOverImage, imgX, imgY, this);
+            }
+            g.setColor(Color.BLACK);
             g.setFont(new Font("Sans serif", Font.BOLD, 20));
             String finalScoreText = "Score: " + snakeModel.getFoodEaten();
             int xScore = (WIDTH - g.getFontMetrics().stringWidth(finalScoreText)) / 2;
-            g.drawString(finalScoreText, xScore, yGameOver + 40);
+            int yGameOver = HEIGHT / 3 + 20 + gameOverImage.getHeight(this) + 20;
+            g.drawString(finalScoreText, xScore, yGameOver);
             String highScoreText = "High Score: " + highScore;
             int xHighScore = (WIDTH - g.getFontMetrics().stringWidth(highScoreText)) / 2;
-            g.drawString(highScoreText, xHighScore, yGameOver + 70);
-            restartButton.setBounds(WIDTH / 2 - 75, yGameOver + 100, 150, 40);
+            g.drawString(highScoreText, xHighScore, yGameOver + 30);
+            restartButton.setBounds(WIDTH / 2 - 100, yGameOver + 70, 200, 60);
             restartButton.setVisible(true);
+            spaceLabel.setBounds(WIDTH / 2 - 75, yGameOver + 120, 150, 30); // Update spaceLabel bounds
+            spaceLabel.setVisible(true);
         }
     }
 
@@ -379,6 +410,7 @@ public class GamePanelView extends JPanel {
                         snakeModel.restartGame();
                         restartButton.setVisible(false);
                         quitButton.setVisible(false);
+                        spaceLabel.setVisible(false);
                         restartGame();
                     }
                     break;

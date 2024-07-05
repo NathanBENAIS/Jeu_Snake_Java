@@ -35,31 +35,31 @@ public class SnakeController {
     }
 
     public void playGameOverSound() {
-        String soundFilePath = getClass().getResource("/bmt/dead.wav").toString(); // Adjust path to your sound file
+        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/dead.wav"; // Adjust path to your sound file
         playSound(soundFilePath);
     }
 
     public void playBoostSound() {
-        String soundFilePath = getClass().getResource("/bmt/boost.wav").toString(); // Adjust path to your sound file
+        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/boost.wav"; // Adjust path to your sound file
         playSound(soundFilePath);
     }
     
     // Method to play sound when the snake eats an apple
     public void playEatAppleSound() {
         // Adjust this path according to where your sound file is located
-        String soundFilePath = getClass().getResource("/bmt/food.wav").toString();
+        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/food.wav";
         playSound(soundFilePath);
     }
 
     public void playEatPoisonSound() {
         // Adjust this path according to where your sound file is located
-        String soundFilePath = getClass().getResource("/bmt/fart.wav").toString();
+        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/fart.wav";
         playSound(soundFilePath);
     }
 
     public void playEatDeadSound() {
         // Adjust this path according to where your sound file is located
-        String soundFilePath = getClass().getResource("/bmt/dead2.wav").toString();
+        String soundFilePath = "/Users/drbook/IdeaProjects/Jeu_Snake_Java/src/main/resources/bmt/dead2.wav";
         playSound(soundFilePath);
     }
 }
